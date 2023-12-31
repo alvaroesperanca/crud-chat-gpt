@@ -1,5 +1,7 @@
 # Projeto CRUD em PHP com MySQL
 
+(Tirando esta frase entre parênteses, tudo foi criado pelo Chat GPT, apenas com solicitações básicas. PS.: Eu sei que a senha não é armazenada do modo correto!)
+
 Este é um simples projeto CRUD (Create, Read, Update, Delete) em PHP utilizando MySQL como banco de dados. O projeto inclui páginas para login, cadastro de usuários, listagem e cadastro de novos usuários.
 
 ## Estrutura do Projeto
