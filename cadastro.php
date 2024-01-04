@@ -52,12 +52,13 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET["confirm_delete_id"])) {
         if ($confirm_delete_id == 1) {
             echo "<script>alert('Não é possível excluir o usuário admin.'); window.location.href = 'cadastro.php';</script>";
         } else {
-            $delete_sql = "DELETE FROM usuarios WHERE id = $confirm_delete_id";
+            // Atualiza o status do usuário para "inativo"
+            $update_status_sql = "UPDATE usuarios SET estado='inativo' WHERE id = $confirm_delete_id";
 
-            if ($conn->query($delete_sql) === TRUE) {
-                echo "<script>alert('Usuário excluído com sucesso.'); window.location.href = 'cadastro.php';</script>";
+            if ($conn->query($update_status_sql) === TRUE) {
+                echo "<script>alert('Usuário marcado como inativo com sucesso.'); window.location.href = 'cadastro.php';</script>";
             } else {
-                echo "<script>alert('Erro ao excluir usuário.'); window.location.href = 'cadastro.php';</script>";
+                echo "<script>alert('Erro ao marcar usuário como inativo.'); window.location.href = 'cadastro.php';</script>";
             }
         }
     }
@@ -80,7 +81,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["submit"])) {
 
 // Consulta os dados na tabela "usuarios"
 $sql = "SELECT * FROM usuarios";
+$sql2 = "SELECT * FROM usuarios where estado = 'ativo'";
 $result = $conn->query($sql);
+$resultado = $conn->query($sql2);
+
 
 // Fecha a conexão
 $conn->close();
@@ -105,38 +109,55 @@ $conn->close();
           <div class="card-header">
             <h3 class="text-center">Lista de Usuários</h3>
           </div>
-          <div class="card-body">
-            <table class="table">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Nome</th>
-                  <th>Senha</th>
-                  <th>Role</th>
-                  <th>Ação</th>
-                </tr>
-              </thead>
-              <tbody>
-                <?php
+
+<!-- ... (código anterior) ... -->
+
+<div class="card-body">
+    <table class="table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Senha</th>
+            <th>Role</th>
+            <th>Ação</th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php
         // Exibe os dados da consulta
-        if ($result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
+        if ($resultado->num_rows > 0) {
+            while ($row = $resultado->fetch_assoc()) {
                 echo "<tr>";
                 echo "<td>" . $row["id"] . "</td>";
                 echo "<td>" . $row["nome"] . "</td>";
                 echo "<td>" . $row["senha"] . "</td>";
                 echo "<td>" . $row["role"] . "</td>";
-                // Adiciona o link "Editar" com o ID do usuário
-                echo "<td><a href='editar.php?edit_id=" . $row["id"] . "'>Editar</a> | <a href='cadastro.php?delete_id=" . $row["id"] . "'>Excluir</a></td>";
+
+                // Adiciona os botões Editar e Excluir somente se o ID não for 1
+                if ($row["id"] != 1) {
+                    echo "<td>
+                            <a href='editar.php?edit_id=" . $row["id"] . "' class='btn btn-success'>Editar</a>
+                            <a href='cadastro.php?delete_id=" . $row["id"] . "' class='btn btn-danger'>Excluir</a>
+                          </td>";
+                } else {
+                    echo "<td></td>"; // Para o usuário com ID 1, não exibe botões
+                }
+
                 echo "</tr>";
             }
         } else {
             echo "<tr><td colspan='5'>Nenhum usuário encontrado.</td></tr>";
         }
         ?>
-              </tbody>
-            </table>
-          </div>
+        </tbody>
+    </table>
+</div>
+
+<!-- ... (código anterior) ... -->
+
+
+
         </div>
 
         <!-- Botão de Logout -->
